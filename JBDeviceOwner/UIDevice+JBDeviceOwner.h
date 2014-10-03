@@ -12,6 +12,6 @@
 
 @interface UIDevice (JBDeviceOwner)
 
-@property (weak, nonatomic, readonly) JBDeviceOwner *owner;
+- (JBDeviceOwner *)getOwnerFromAddressBook:(NSError **)error;
 
 @end

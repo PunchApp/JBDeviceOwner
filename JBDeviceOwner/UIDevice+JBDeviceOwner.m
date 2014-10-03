@@ -9,15 +9,21 @@
 #import "UIDevice+JBDeviceOwner.h"
 #import "JBDeviceOwner.h"
 
-// Forces this .m file to be linked without needing -all_load or -force_load
-@interface FIX_CATEGORY_BUG_JBDeviceOwner @end
-@implementation FIX_CATEGORY_BUG_JBDeviceOwner @end
+#import <AddressBook/AddressBook.h>
 
 @implementation UIDevice (JBDeviceOwner)
 
-- (JBDeviceOwner *)owner {
-  JBDeviceOwner *potentialOwner = [[JBDeviceOwner alloc] initWithDevice:self];
-  return potentialOwner.hasAddressBookMatch ? potentialOwner : nil;
+- (JBDeviceOwner *)getOwnerFromAddressBook:(NSError *__autoreleasing *)error
+{
+    JBDeviceOwner *potentialOwner = [[JBDeviceOwner alloc] initWithDevice:self];
+    
+    ABAuthorizationStatus authorizationStatus = ABAddressBookGetAuthorizationStatus();
+    if (authorizationStatus != kABAuthorizationStatusAuthorized)
+    {
+        *error = [NSError errorWithDomain:(NSString *)ABAddressBookErrorDomain code:authorizationStatus userInfo:nil];
+    }
+    
+    return potentialOwner;
 }
 
 @end
